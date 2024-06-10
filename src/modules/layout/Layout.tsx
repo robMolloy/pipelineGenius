@@ -1,7 +1,7 @@
 import { Footer } from "./Footer";
 import { NavBar } from "./NavBar";
-import { LinkData as HomeLinkData } from "@/pages";
-import { LinkData as Home2LinkData } from "@/pages/home2";
+import { LinkData as HomeLinkData } from "@/pages/index.page";
+import { LinkData as Home2LinkData } from "@/pages/home2.page";
 import { useRouter } from "next/router";
 
 const pageLinks = [HomeLinkData, Home2LinkData];
@@ -41,9 +41,27 @@ const ContainerWithSpotlightBackgroundTop = (p: { children: React.ReactNode }) =
   );
 };
 
-export const Layout = (p: { children: React.ReactNode }) => {
+const DisplayLinks = (p: { horizontal?: boolean }) => {
   const router = useRouter();
 
+  return (
+    <ul className={`menu ${p.horizontal ? "menu-horizontal" : ""}`}>
+      {pageLinks.map((x) => (
+        <li key={`${x.href}-navLink`}>
+          <div
+            role="link"
+            onClick={() => router.push(x.href)}
+            className={`${x.href === router.route ? "active" : ""}`}
+          >
+            {x.label}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+export const Layout = (p: { children: React.ReactNode }) => {
   return (
     <>
       <div className="drawer">
@@ -51,20 +69,7 @@ export const Layout = (p: { children: React.ReactNode }) => {
         <div className="drawer-content flex flex-col">
           <NavBarContainer>
             <NavBar OpenDrawerWrapper={OpenDrawerWrapper}>
-              <ul className="menu menu-horizontal">
-                {pageLinks.map((x) => (
-                  <li key={`${x.href}-navLink`}>
-                    <div role="link" onClick={() => router.push(x.href)}>
-                      {x.label}
-                    </div>
-                  </li>
-                ))}
-                {/* <li>
-                  <a href="#get-in-touch-form" className="btn btn-primary btn-sm">
-                    Get in touch
-                  </a>
-                </li> */}
-              </ul>
+              <DisplayLinks horizontal />
             </NavBar>
           </NavBarContainer>
           <ContainerWithSpotlightBackgroundTop>{p.children}</ContainerWithSpotlightBackgroundTop>
@@ -73,19 +78,9 @@ export const Layout = (p: { children: React.ReactNode }) => {
           <CloseDrawerWrapper />
 
           <DrawerContainer>
-            <div className="menu">
-              <CloseDrawerWrapper>
-                <ul>
-                  {pageLinks.map((x) => (
-                    <li key={`${x.href}-drawerLink`}>
-                      <div role="link" onClick={() => router.push(x.href)}>
-                        {x.label}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </CloseDrawerWrapper>
-            </div>
+            <CloseDrawerWrapper>
+              <DisplayLinks />
+            </CloseDrawerWrapper>
           </DrawerContainer>
         </div>
       </div>
