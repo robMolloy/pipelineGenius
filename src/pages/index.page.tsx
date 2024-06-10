@@ -2,7 +2,8 @@ import { Typography } from "@/components";
 import { CodeBlock } from "@/components/CodeBlock";
 import { useState } from "react";
 
-const str = `a`;
+const str = `console.log(123);
+`;
 
 export const LinkData = {
   label: "Home",

@@ -1,5 +1,5 @@
+import React, { useEffect, useRef, useState } from "react";
 import hljs from "highlight.js";
-import { useEffect, useRef, useState } from "react";
 import xss from "xss";
 
 export type TCodeBlockProps = {
@@ -31,9 +31,8 @@ export const CodeBlock = ({ children, language = "yaml" }: TCodeBlockProps) => {
             copy
           </button>
         </span>
-
         <code ref={htmlCodeElmRef} className={`language-${language}`}>
-          {children}
+          {escapedHtml}
         </code>
       </pre>
     </>
