@@ -12,6 +12,8 @@
     "firebase:enable-webframeworks": "echo \"        env:\n          FIREBASE_CLI_EXPERIMENTS: webframeworks\" >> .github/workflows/firebase-hosting-merge.yml && echo \"        env:\n          FIREBASE_CLI_EXPERIMENTS: webframeworks\" >> .github/workflows/firebase-hosting-pull-request.yml"
   },
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.13",
+    "daisyui": "^4.12.2",
     "next": "13.5.6",
     "react": "^18",
     "react-dom": "^18"
