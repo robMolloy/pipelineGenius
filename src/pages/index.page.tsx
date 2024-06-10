@@ -1,4 +1,8 @@
 import { Typography } from "@/components";
+import { CodeBlock } from "@/components/CodeBlock";
+import { useState } from "react";
+
+const str = `a`;
 
 export const LinkData = {
   label: "Home",
@@ -6,56 +10,15 @@ export const LinkData = {
 };
 
 export default function Home() {
+  const [count, setCount] = useState(2);
   return (
     <Typography fullPage>
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home{" "}
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home{" "}
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home{" "}
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home home home home home home home home home home home
-      home home home home home home home home home{" "}
+      <p className="cursor-pointer font-mono hover:font-bold">
+        name: Deploy to Firebase Hosting on merge
+      </p>
+
+      <button onClick={() => setCount((x) => x + 1)}>click me</button>
+      <CodeBlock>{str.repeat(count)}</CodeBlock>
     </Typography>
   );
 }
