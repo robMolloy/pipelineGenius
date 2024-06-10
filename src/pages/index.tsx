@@ -1,3 +1,61 @@
+import { Typography } from "@/components";
+
+export const LinkData = {
+  label: "Home",
+  href: "/",
+};
+
 export default function Home() {
-  return <main className={``}></main>;
+  return (
+    <Typography fullPage>
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home{" "}
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home{" "}
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home{" "}
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home home home home home home home home home home home
+      home home home home home home home home home{" "}
+    </Typography>
+  );
 }

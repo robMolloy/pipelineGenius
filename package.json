@@ -7,9 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "firebase:install": "npm i -D firebase-tools",
-    "firebase:init-hosting": "node_modules/.bin/firebase init hosting",
-    "firebase:enable-webframeworks": "echo \"        env:\n          FIREBASE_CLI_EXPERIMENTS: webframeworks\" >> .github/workflows/firebase-hosting-merge.yml && echo \"        env:\n          FIREBASE_CLI_EXPERIMENTS: webframeworks\" >> .github/workflows/firebase-hosting-pull-request.yml"
+    "tsc:watch": "tsc --noEmit --watch"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.13",
@@ -27,6 +25,7 @@
     "eslint-config-next": "13.5.6",
     "firebase-tools": "^13.11.2",
     "postcss": "^8",
+    "prettier-plugin-tailwindcss": "^0.6.2",
     "tailwindcss": "^3",
     "typescript": "^5"
   }
