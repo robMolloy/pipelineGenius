@@ -1,10 +1,11 @@
 import { Footer } from "./Footer";
 import { NavBar } from "./NavBar";
 import { LinkData as HomeLinkData } from "@/pages/index.page";
+import { LinkData as InputLinkData } from "@/pages/input.page";
 import { LinkData as Home2LinkData } from "@/pages/home2.page";
 import { useRouter } from "next/router";
 
-const pageLinks = [HomeLinkData, Home2LinkData];
+const pageLinks = [HomeLinkData, Home2LinkData, InputLinkData];
 
 const CloseDrawerWrapper: React.FC<{ children?: React.ReactNode }> = (p) => {
   return (
