@@ -1,22 +1,28 @@
-import React, { useEffect, useRef, useState } from "react";
 import hljs from "highlight.js";
-import xss from "xss";
+import { useEffect, useRef, useState } from "react";
 
 export type TCodeBlockProps = {
   children: string;
-  language?: "typescript" | "golang" | "go" | "yaml";
+  language?: "typescript" | "golang" | "yaml";
 };
 
 export const CodeBlock = ({ children, language = "yaml" }: TCodeBlockProps) => {
-  const htmlCodeElmRef = useRef<HTMLElement>(null);
+  const htmlCodeElmRef = useRef<HTMLDivElement>(null);
 
-  const [escapedHtml, setEscapedHtml] = useState(xss(children));
+  const [escapedHtml, setEscapedHtml] = useState("");
 
-  useEffect(() => setEscapedHtml(xss(children)), [children]);
+  useEffect(() => {
+    const rtn = children;
+    setEscapedHtml(rtn);
+  }, [children]);
+
   useEffect(() => {
     if (htmlCodeElmRef.current) {
-      htmlCodeElmRef.current.setAttribute("data-highlighted", "");
-      hljs.highlightElement(htmlCodeElmRef.current);
+      const codeElms = Array.from(htmlCodeElmRef.current.querySelectorAll("*")) as HTMLElement[];
+      codeElms.forEach((codeElm) => {
+        codeElm.setAttribute("data-highlighted", "");
+        hljs.highlightElement(codeElm);
+      });
     }
   }, [escapedHtml]);
 
@@ -31,8 +37,17 @@ export const CodeBlock = ({ children, language = "yaml" }: TCodeBlockProps) => {
             copy
           </button>
         </span>
-        <code ref={htmlCodeElmRef} className={`language-${language}`}>
-          {escapedHtml}
+
+        <code ref={htmlCodeElmRef} className="hljs overflow-x-scroll">
+          {escapedHtml.split(`\n`).map((x, j) => (
+            <code
+              key={`whatever-${j}`}
+              className={`language-${language} overflow-none block cursor-pointer rounded-box font-mono hover:bg-slate-300 hover:font-bold`}
+              style={{ padding: "0 8px", borderRadius: "4px", overflow: "unset" }}
+            >
+              {x}
+            </code>
+          ))}
         </code>
       </pre>
     </>
