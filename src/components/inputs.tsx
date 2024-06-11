@@ -54,12 +54,11 @@ export function RadioInput(p: {
   value?: string;
   onSelect: (e: string) => void;
   label: string;
-  placeholder: string;
 }) {
   return (
     <fieldset className="form-control">
       <div className="label">
-        <span className="label-text">What is the script language?</span>
+        <span className="label-text">{p.label}</span>
       </div>
 
       {p.options.map((x, j) => (
