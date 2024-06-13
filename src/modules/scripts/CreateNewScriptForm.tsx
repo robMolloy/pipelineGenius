@@ -1,19 +1,10 @@
 import { RadioInput, TextInput, Textarea } from "@/components/inputs";
 import React, { useState } from "react";
 import { z } from "zod";
-import { scriptFormDataSchema, scriptSchema } from "../db";
+import { createScriptFormDataSchema, createScriptFromFormData } from "../db";
 
-type TScript = z.infer<typeof scriptSchema>;
-
-export type TCreateNewScriptFormProps = {
-  children: React.ReactNode;
-};
-
-export const CreateNewScriptForm = (p: {
-  onSubmitSuccess: (data: TScript) => void;
-  onSubmitFail: (data: TScript) => void;
-}) => {
-  const [formData, setFormData] = useState<z.infer<typeof scriptFormDataSchema>>({
+export const CreateNewScriptForm = () => {
+  const [formData, setFormData] = useState<z.infer<typeof createScriptFormDataSchema>>({
     language: "",
     name: "",
     content: "",
@@ -21,12 +12,11 @@ export const CreateNewScriptForm = (p: {
 
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        const script = { ...formData, content: formData.content.split("\n") } as TScript;
-        const parseResponse = scriptSchema.safeParse(script);
-        if (parseResponse.success) p.onSubmitSuccess(script);
-        else p.onSubmitFail(script);
+
+        const parseResponse = createScriptFormDataSchema.safeParse(formData);
+        if (parseResponse.success) createScriptFromFormData({ data: parseResponse.data });
       }}
     >
       <RadioInput

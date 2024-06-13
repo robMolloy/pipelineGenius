@@ -1,8 +1,8 @@
 import { Footer } from "./Footer";
 import { NavBar } from "./NavBar";
 import { LinkData as HomeLinkData } from "@/pages/index.page";
-import { LinkData as InputLinkData } from "@/pages/input.page";
-import { LinkData as Home2LinkData } from "@/pages/home2.page";
+import { LinkData as InputLinkData } from "@/pages/create-new-script.page";
+import { LinkData as Home2LinkData } from "@/pages/view-scripts.page";
 import { useRouter } from "next/router";
 
 const pageLinks = [HomeLinkData, Home2LinkData, InputLinkData];
@@ -46,7 +46,7 @@ const DisplayLinks = (p: { horizontal?: boolean }) => {
   const router = useRouter();
 
   return (
-    <ul className={`menu ${p.horizontal ? "menu-horizontal" : ""}`}>
+    <ul className={`menu ${p.horizontal ? "menu-horizontal gap-2" : ""}`}>
       {pageLinks.map((x) => (
         <li key={`${x.href}-navLink`}>
           <div

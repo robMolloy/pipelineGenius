@@ -13,11 +13,15 @@ export async function getSafeDocFromFirestore<T extends ZodType<any, any, any>>(
   if (!docSnap.exists())
     return {
       success: false,
+      status: "item_not_found",
       error: { message: `doc from ${p.collectionName} collection with id "${p.id}" not found` },
     } as const;
 
   const parseResponse = p.schema.safeParse({ id: p.id, ...docSnap.data() });
-  return parseResponse;
+
+  return parseResponse.success
+    ? ({ ...parseResponse, status: "success" } as const)
+    : ({ ...parseResponse, status: "failed" } as const);
 }
 export async function getAllSafeDocsFromFirestore<T extends ZodType<any, any, any>>(p: {
   collectionName: string;
@@ -29,7 +33,8 @@ export async function getAllSafeDocsFromFirestore<T extends ZodType<any, any, an
     .map((doc) => {
       const parseResponse = p.schema.safeParse(doc);
       if (parseResponse.success) return parseResponse.data;
-    }) as z.infer<typeof p.schema>[];
+    })
+    .filter((x) => !!x) as z.infer<typeof p.schema>[];
 
   return documents;
 }
