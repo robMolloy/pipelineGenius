@@ -24,6 +24,7 @@ export const CreateNewScriptForm = () => {
           { value: "yaml", label: "yaml" },
           { value: "golang", label: "golang" },
         ]}
+        label="What is the script language?"
         value={formData.language}
         onSelect={(x) => setFormData({ ...formData, language: x })}
       />
