@@ -20,7 +20,7 @@ export default function Page() {
   }, []);
   return (
     <Typography fullPage>
-      <div className="not-prose grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="not-prose grid grid-cols-1 gap-4">
         {safeScripts.map((script) => (
           <Link
             href={`/scripts/${script.id}`}
