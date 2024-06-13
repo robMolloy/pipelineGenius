@@ -1,11 +1,11 @@
 import { Footer } from "./Footer";
 import { NavBar } from "./NavBar";
 import { LinkData as HomeLinkData } from "@/pages/index.page";
-import { LinkData as InputLinkData } from "@/pages/create-new-script.page";
-import { LinkData as Home2LinkData } from "@/pages/view-scripts.page";
+import { LinkData as CreateNewScriptLinkData } from "@/pages/create-new-script.page";
+import { LinkData as ViewScriptsLinkData } from "@/pages/view-scripts.page";
 import { useRouter } from "next/router";
 
-const pageLinks = [HomeLinkData, Home2LinkData, InputLinkData];
+const pageLinks = [HomeLinkData, ViewScriptsLinkData, CreateNewScriptLinkData];
 
 const CloseDrawerWrapper: React.FC<{ children?: React.ReactNode }> = (p) => {
   return (
@@ -24,7 +24,7 @@ const OpenDrawerWrapper: React.FC<{ children?: React.ReactNode }> = (p) => {
 
 const NavBarContainer = (p: { children: React.ReactNode }) => {
   return (
-    <div className="sticky top-0 z-[98]">
+    <div className="sticky top-0 z-[10]">
       <div className="navbar w-full border-b bg-base-300">{p.children}</div>
     </div>
   );
@@ -75,7 +75,7 @@ export const Layout = (p: { children: React.ReactNode }) => {
           </NavBarContainer>
           <ContainerWithSpotlightBackgroundTop>{p.children}</ContainerWithSpotlightBackgroundTop>
         </div>
-        <div className="drawer-side z-[99]">
+        <div className="drawer-side z-[11]">
           <CloseDrawerWrapper />
 
           <DrawerContainer>

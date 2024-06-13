@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { z } from "zod";
 import { createScriptFormDataSchema, createScriptFromFormData } from "../db";
 
-export const CreateNewScriptForm = () => {
+export const CreateNewScriptForm = (p: { onSubmitSuccess?: () => void }) => {
   const [formData, setFormData] = useState<z.infer<typeof createScriptFormDataSchema>>({
     language: "",
     name: "",
@@ -16,7 +16,10 @@ export const CreateNewScriptForm = () => {
         e.preventDefault();
 
         const parseResponse = createScriptFormDataSchema.safeParse(formData);
-        if (parseResponse.success) createScriptFromFormData({ data: parseResponse.data });
+        if (parseResponse.success) {
+          const submitResponse = await createScriptFromFormData({ data: parseResponse.data });
+          if (submitResponse.success && p.onSubmitSuccess) p.onSubmitSuccess();
+        }
       }}
     >
       <RadioInput
