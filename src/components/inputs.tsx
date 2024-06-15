@@ -25,19 +25,25 @@ export const TextInput = (p: {
   );
 };
 
-export const Textarea = (p: {
+export const Textarea = ({
+  heightClass = "h-48",
+  ...p
+}: {
   value: string;
   onInput: (e: string) => void;
-  label: string;
+  label?: string;
   placeholder: string;
+  heightClass?: string;
 }) => {
   return (
     <label className="form-control">
-      <div className="label">
-        <span className="label-text">{p.label}</span>
-      </div>
+      {p.label !== undefined && (
+        <div className="label">
+          <span className="label-text">{p.label}</span>
+        </div>
+      )}
       <textarea
-        className="textarea textarea-bordered h-48 bg-white text-slate-600"
+        className={`textarea textarea-bordered bg-white text-slate-600 ${heightClass}`}
         placeholder={p.placeholder}
         onInput={(e) => {
           const e2 = e as FormEvent<HTMLTextAreaElement> & { target: { value: string } };

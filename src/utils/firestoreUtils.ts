@@ -20,7 +20,7 @@ export async function getSafeDocFromFirestore<T extends ZodType<any, any, any>>(
   const parseResponse = p.schema.safeParse({ id: p.id, ...docSnap.data() });
 
   return parseResponse.success
-    ? ({ ...parseResponse, status: "success" } as const)
+    ? ({ success: true, data: parseResponse.data as z.infer<T>, status: "success" } as const)
     : ({ ...parseResponse, status: "failed" } as const);
 }
 export async function getAllSafeDocsFromFirestore<T extends ZodType<any, any, any>>(p: {
