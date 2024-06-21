@@ -1,3 +1,4 @@
+import { CommentsForm } from "@/modules/forms/CommentsForm";
 import { Typography } from "@/components";
 import { CodeBlock } from "@/components/CodeBlock";
 import { Textarea } from "@/components/inputs";
@@ -10,63 +11,29 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { v4 } from "uuid";
 import { z } from "zod";
+import { createDrawer } from "@/modules/createDrawer/createDrawer";
 type TScriptResponse = Awaited<ReturnType<typeof getSafeScript>>;
 
-const OpenDrawerWrapper = (p: { children: React.ReactNode }) => (
-  <label htmlFor="my-drawer-4">{p.children}</label>
-);
+const { OpenDrawerWrapper, Drawer } = createDrawer({
+  directionClass: "drawer-end",
+  id: "right-drawer",
+});
 
-const CloseDrawerWrapper = (p: { children?: React.ReactNode }) => (
-  <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay opacity-0">
-    {p.children}
-  </label>
-);
-const DrawerOverlay = (p: { children?: React.ReactNode }) => (
-  <div className="drawer-side z-[11]">{p.children}</div>
-);
-const DrawerContent = (p: { children?: React.ReactNode }) => (
-  <div className="min-h-full w-96 max-w-[400px] bg-base-200 p-4 text-base-content">
-    {p.children}
-  </div>
-);
-
-const Drawer = (p: { children: React.ReactNode }) => {
-  return (
-    <div className="drawer drawer-end">
-      <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
-      <DrawerOverlay>
-        <CloseDrawerWrapper />
-        <DrawerContent>{p.children}</DrawerContent>
-      </DrawerOverlay>
-    </div>
-  );
-};
-
-type TComment = {
-  id: string;
-  content: string;
-};
-
-type TCommentTree = (TComment & { children: undefined | TCommentTree })[];
+type TComment = { id: string; content: string };
+type TCommentTree = (TComment & { children?: undefined | TCommentTree })[];
 
 const commentsToCommentsTree = (initComments: TComment[]) => {
   const comments = cloneDeep(initComments) as typeof initComments;
   const commentsTree: TCommentTree = [];
 
-  const sortedComments = comments.sort((a, b) => (a.id > b.id ? 1 : -1));
-  const commentTreeComments = sortedComments.map((x) => ({
-    ...x,
-    children: undefined as TCommentTree | undefined,
-  }));
+  const sortedComments = comments.sort((a, b) => (a.id > b.id ? 1 : -1)) as TCommentTree;
 
-  commentTreeComments.forEach((comment) => {
+  sortedComments.forEach((comment) => {
     const parentId = comment.id.split("_").slice(0, -1).join("_");
-    const parent = commentTreeComments.find((x) => x.id === parentId);
+    const parent = sortedComments.find((x) => x.id === parentId);
     if (!parent) return commentsTree.push(comment);
 
-    // parent.children = parent.children === undefined ? [comment] : [...parent.children, comment]
-    if (parent.children === undefined) parent.children = [comment];
-    else parent.children.push(comment);
+    parent.children = parent.children === undefined ? [comment] : [...parent.children, comment];
   });
 
   return commentsTree;
@@ -135,7 +102,7 @@ export async function createCommentFromFormData(p: { data: z.infer<typeof commen
     return { success: true, data: p.data } as const;
   } catch (e) {
     const error = e as ErrorEvent;
-    console.log({ ...error });
+    console.error(error);
 
     return { success: false, error: { message: error.message } } as const;
   }
@@ -158,11 +125,14 @@ export default function Page() {
   const [scriptLineCommentsResponse, setScriptLineCommentsResponse] = useState<
     Awaited<ReturnType<typeof getAllSafeComments>> | undefined
   >();
-  const [textInputs, setTextInputs] = useState<{ [key: string]: string }>({});
 
   const currentLineId = scriptResponse?.data?.id
     ? `${scriptResponse.data.id}_${scriptLineId}`
     : undefined;
+
+  const scriptLineCommentTree = (scriptLineCommentsResponse ?? []).filter((x) => {
+    return currentLineId ? x.id.startsWith(currentLineId) : false;
+  });
 
   useEffect(() => {
     const scriptIdParseResponse = z.string().safeParse(router.query.scriptId);
@@ -193,57 +163,22 @@ export default function Page() {
               {scriptResponse.data.content[scriptLineId]}
             </div>
 
-            {/* {scriptLineCommentsResponse === undefined && <div>Loading...</div>}
-            {scriptLineCommentsResponse?.status === "error" && <div>Something went wrong!</div>} */}
-            {/* {scriptLineCommentsResponse?.status === "success" && ( */}
-            {scriptLineCommentsResponse && (
-              <>
-                <h2>Comments</h2>
-                {(() => {
-                  const scriptLineCommentBranch = scriptLineCommentsResponse.filter((x) =>
-                    x.id.startsWith(`${scriptId}_${scriptLineId}`),
-                  );
-                  if (scriptLineCommentBranch.length > 0)
-                    return <DisplayCommentsTree data={scriptLineCommentBranch} />;
-
-                  return (
-                    <>
-                      <div>Seems like there's no comments yet</div>
-                      <Textarea
-                        value={textInputs[`${scriptResponse.data.id}_${scriptLineId}`]}
-                        heightClass="min-h-[1rem]"
-                        onInput={(e) => {
-                          if (currentLineId) setTextInputs({ ...textInputs, [currentLineId]: e });
-                        }}
-                        placeholder={"Be the first to reply"}
-                      />
-                      <div className="flex justify-end">
-                        <button
-                          className="btn btn-neutral btn-xs mt-2"
-                          onClick={async () => {
-                            const content = currentLineId ? textInputs?.[currentLineId] : undefined;
-                            if (content) {
-                              const newComment = { id: `${currentLineId}_${v4()}`, content };
-                              const createCommentResponse = await createCommentFromFormData({
-                                data: newComment,
-                              });
-                              if (createCommentResponse.success) {
-                                setScriptLineCommentsResponse([
-                                  ...scriptLineCommentsResponse,
-                                  { ...newComment, children: undefined },
-                                ]);
-                              }
-                            }
-                          }}
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </>
-                  );
-                })()}
-              </>
+            <h2>Comments</h2>
+            {scriptLineCommentTree.length > 0 && (
+              <DisplayCommentsTree data={scriptLineCommentTree} />
             )}
+            {scriptLineCommentTree.length === 0 && <div>Seems like there's no comments yet</div>}
+
+            <CommentsForm
+              placeholder="Be the first to reply"
+              onSubmit={async (e) => {
+                const data = { id: `${currentLineId}_${v4()}`, content: e };
+                const createCommentResponse = await createCommentFromFormData({ data });
+                if (createCommentResponse.success && scriptLineCommentsResponse) {
+                  setScriptLineCommentsResponse([...scriptLineCommentsResponse, data]);
+                }
+              }}
+            />
           </Drawer>
           <div className="not-prose grid grid-cols-1 gap-4">
             <div key={scriptResponse.data.id} className="card card-compact bg-base-300 shadow-xl">
