@@ -23,10 +23,10 @@ type TComment = { id: string; content: string };
 type TCommentTree = (TComment & { children?: undefined | TCommentTree })[];
 
 const commentsToCommentsTree = (initComments: TComment[]) => {
-  const comments = cloneDeep(initComments) as typeof initComments;
   const commentsTree: TCommentTree = [];
-
-  const sortedComments = comments.sort((a, b) => (a.id > b.id ? 1 : -1)) as TCommentTree;
+  const sortedComments = cloneDeep(initComments).sort((a, b) =>
+    a.id > b.id ? 1 : -1,
+  ) as TCommentTree;
 
   sortedComments.forEach((comment) => {
     const parentId = comment.id.split("_").slice(0, -1).join("_");
