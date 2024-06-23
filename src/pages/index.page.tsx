@@ -8,7 +8,7 @@ export const LinkData = {
 export default function Home() {
   return (
     <Typography fullPage>
-      <h1>welcome 11</h1>
+      <h1>welcome 12</h1>
     </Typography>
   );
 }

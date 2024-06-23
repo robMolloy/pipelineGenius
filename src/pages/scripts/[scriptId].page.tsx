@@ -167,7 +167,9 @@ export default function Page() {
             {scriptLineCommentTree.length > 0 && (
               <DisplayCommentsTree data={scriptLineCommentTree} />
             )}
-            {scriptLineCommentTree.length === 0 && <div>Seems like there's no comments yet</div>}
+            {scriptLineCommentTree.length === 0 && (
+              <div>Seems like there&apos;s no comments yet</div>
+            )}
 
             <CommentsForm
               placeholder="Be the first to reply"
