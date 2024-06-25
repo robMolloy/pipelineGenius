@@ -11,7 +11,6 @@ export const CommentsForm = (p: { onSubmit: (str: string) => void; placeholder: 
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        console.log({ content });
 
         if (content === "")
           return notifyStore.push({

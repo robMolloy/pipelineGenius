@@ -60,7 +60,7 @@ export async function createScriptFromFormData(p: {
     return { success: true, data } as const;
   } catch (e) {
     const error = e as ErrorEvent;
-    console.log({ ...error });
+    console.error(error);
 
     return { success: false, error: { message: error.message } } as const;
   }
