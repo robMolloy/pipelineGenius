@@ -1,5 +1,5 @@
+import { createCommentFromFormData } from "@/modules/db/dbComments";
 import { CommentsForm } from "@/modules/forms/CommentsForm";
-import { createCommentFromFormData } from "@/pages/scripts/[scriptId].page";
 import React, { useState } from "react";
 import { v4 } from "uuid";
 import { z } from "zod";
