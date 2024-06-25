@@ -3,16 +3,9 @@ import { CodeBlock } from "@/components/CodeBlock";
 import { CommentsTree } from "@/components/CommentsTree";
 import { createDrawer } from "@/modules/createDrawer/createDrawer";
 import { getSafeScript } from "@/modules/db";
-import {
-  commentSchema,
-  commentsToCommentsTree,
-  createCommentFromFormData,
-  getAllSafeComments,
-} from "@/modules/db/dbComments";
-import { CommentsForm } from "@/modules/forms/CommentsForm";
+import { commentSchema, commentsToCommentsTree, getAllSafeComments } from "@/modules/db/dbComments";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { v4 } from "uuid";
 import { z } from "zod";
 
 const { OpenDrawerWrapper, Drawer } = createDrawer({
@@ -21,6 +14,7 @@ const { OpenDrawerWrapper, Drawer } = createDrawer({
 });
 
 type TScriptResponse = Awaited<ReturnType<typeof getSafeScript>>;
+
 export default function Page() {
   const router = useRouter();
   const [scriptResponse, setScriptResponse] = useState<undefined | TScriptResponse>();
@@ -64,23 +58,14 @@ export default function Page() {
             </div>
 
             <h2>Comments</h2>
-            {currentLineComments.length === 0 && <div>Seems like there's no comments yet</div>}
-            {currentLineComments.length > 0 && (
+
+            {currentLineId && (
               <CommentsTree
+                parentId={currentLineId}
                 data={commentsToCommentsTree(currentLineComments)}
                 onAddComment={(data) => setComments([...comments, data])}
               />
             )}
-
-            <CommentsForm
-              placeholder={comments.length === 0 ? "Be the first to reply" : "Reply..."}
-              onSubmit={async (e) => {
-                const data = { id: `${currentLineId}_${v4()}`, content: e };
-                const createCommentResponse = await createCommentFromFormData({ data });
-
-                if (createCommentResponse.success) setComments([...comments, data]);
-              }}
-            />
           </Drawer>
           <div className="not-prose grid grid-cols-1 gap-4">
             <div key={scriptResponse.data.id} className="card card-compact bg-base-300 shadow-xl">
