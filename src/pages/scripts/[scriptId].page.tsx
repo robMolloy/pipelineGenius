@@ -14,21 +14,19 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 import { z } from "zod";
-type TScriptResponse = Awaited<ReturnType<typeof getSafeScript>>;
 
 const { OpenDrawerWrapper, Drawer } = createDrawer({
   directionClass: "drawer-end",
   id: "right-drawer",
 });
 
-type TComment = z.infer<typeof commentSchema>;
-
+type TScriptResponse = Awaited<ReturnType<typeof getSafeScript>>;
 export default function Page() {
   const router = useRouter();
   const [scriptResponse, setScriptResponse] = useState<undefined | TScriptResponse>();
   const [scriptId, setScriptId] = useState<string | undefined>();
   const [scriptLineId, setScriptLineId] = useState<number>();
-  const [comments, setComments] = useState<TComment[]>([]);
+  const [comments, setComments] = useState<z.infer<typeof commentSchema>[]>([]);
 
   const currentLineId = scriptResponse?.data?.id
     ? `${scriptResponse.data.id}_${scriptLineId}`
@@ -89,12 +87,7 @@ export default function Page() {
               <div className="card-body">
                 <h2 className="card-title">{scriptResponse.data.name}</h2>
                 <OpenDrawerWrapper>
-                  <CodeBlock
-                    onLineClick={(x) => {
-                      setScriptLineId(x);
-                      console.log({ x });
-                    }}
-                  >
+                  <CodeBlock onLineClick={(x) => setScriptLineId(x)}>
                     {scriptResponse.data.content.join("\n")}
                   </CodeBlock>
                 </OpenDrawerWrapper>
