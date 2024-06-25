@@ -3,7 +3,13 @@ import React, { useState } from "react";
 import { useNotifyStore } from "../notify";
 import { v4 } from "uuid";
 
-export const CommentsForm = (p: { onSubmit: (str: string) => void; placeholder: string }) => {
+export const CommentsForm = (p: {
+  onSubmit: (p: {
+    content: string;
+    setContent: React.Dispatch<React.SetStateAction<string>>;
+  }) => void;
+  placeholder: string;
+}) => {
   const [content, setContent] = useState("");
   const notifyStore = useNotifyStore();
 
@@ -12,15 +18,15 @@ export const CommentsForm = (p: { onSubmit: (str: string) => void; placeholder: 
       onSubmit={(e) => {
         e.preventDefault();
 
-        if (content === "")
-          return notifyStore.push({
+        const isError = content === "";
+        if (!isError) p.onSubmit({ content, setContent });
+        else
+          notifyStore.push({
             id: v4(),
-            type: "alert-warning",
-            text: "Something has gone wrong - your form seems to be blank",
+            type: "alert-error",
+            text: "Your comment cannot be blank",
             duration: 3000,
           });
-        p.onSubmit(content);
-        setContent("");
       }}
     >
       <Textarea

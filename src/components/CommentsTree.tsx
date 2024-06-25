@@ -1,4 +1,4 @@
-import { commentsToCommentsTree, createCommentFromFormData } from "@/modules/db/dbComments";
+import { commentsToCommentsTree } from "@/modules/db/dbComments";
 import { CommentsForm } from "@/modules/forms/CommentsForm";
 import React, { useState } from "react";
 import { v4 } from "uuid";
@@ -10,7 +10,10 @@ export const CommentsTree = (p: {
   parentId?: string;
   data: ReturnType<typeof commentsToCommentsTree>;
   first?: boolean;
-  onAddCommentSuccess: (p: z.infer<typeof commentSchema>) => void;
+  onAddComment: (p: {
+    comment: z.infer<typeof commentSchema>;
+    setContent: React.Dispatch<React.SetStateAction<string>>;
+  }) => void;
 }) => {
   const { first = true } = p;
   const [showReplyInputIds, setShowReplyInputIds] = useState<string[]>([]);
@@ -22,8 +25,8 @@ export const CommentsTree = (p: {
         <CommentsForm
           placeholder={p.data.length === 0 ? "Be the first to reply" : "Reply..."}
           onSubmit={async (e) => {
-            const data = { id: `${p.parentId}_${v4()}`, content: e };
-            p.onAddCommentSuccess(data);
+            const comment = { id: `${p.parentId}_${v4()}`, content: e.content };
+            p.onAddComment({ comment, setContent: e.setContent });
           }}
         />
       )}
@@ -44,10 +47,8 @@ export const CommentsTree = (p: {
                 <CommentsForm
                   placeholder="Reply..."
                   onSubmit={async (e) => {
-                    const data = { id: `${x.id}_${v4()}`, content: e };
-                    const createCommentResponse = await createCommentFromFormData({ data });
-                    if (createCommentResponse.success && p.onAddCommentSuccess)
-                      p.onAddCommentSuccess(createCommentResponse.data);
+                    const comment = { id: `${x.id}_${v4()}`, content: e.content };
+                    p.onAddComment({ comment, setContent: e.setContent });
                   }}
                 />
               )}
@@ -62,7 +63,7 @@ export const CommentsTree = (p: {
                   <CommentsTree
                     first={false}
                     data={x.children}
-                    onAddCommentSuccess={(data) => p.onAddCommentSuccess(data)}
+                    onAddComment={(data) => p.onAddComment(data)}
                   />
                 </details>
               </li>

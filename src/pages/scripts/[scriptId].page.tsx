@@ -3,9 +3,16 @@ import { CodeBlock } from "@/components/CodeBlock";
 import { CommentsTree } from "@/components/CommentsTree";
 import { createDrawer } from "@/modules/createDrawer/createDrawer";
 import { getSafeScript } from "@/modules/db";
-import { commentSchema, commentsToCommentsTree, getAllSafeComments } from "@/modules/db/dbComments";
+import {
+  commentSchema,
+  commentsToCommentsTree,
+  createCommentFromFormData,
+  getAllSafeComments,
+} from "@/modules/db/dbComments";
+import { useNotifyStore } from "@/modules/notify";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { v4 } from "uuid";
 import { z } from "zod";
 
 const { OpenDrawerWrapper, Drawer } = createDrawer({
@@ -17,6 +24,8 @@ type TScriptResponse = Awaited<ReturnType<typeof getSafeScript>>;
 
 export default function Page() {
   const router = useRouter();
+  const notifyStore = useNotifyStore();
+
   const [scriptResponse, setScriptResponse] = useState<undefined | TScriptResponse>();
   const [scriptId, setScriptId] = useState<string | undefined>();
   const [scriptLineId, setScriptLineId] = useState<number>();
@@ -62,7 +71,26 @@ export default function Page() {
               <CommentsTree
                 parentId={currentLineId}
                 data={commentsToCommentsTree(currentLineComments)}
-                onAddCommentSuccess={(data) => setComments([...comments, data])}
+                onAddComment={async (p) => {
+                  const createCommentResponse = await createCommentFromFormData({
+                    data: p.comment,
+                  });
+
+                  const isSuccess = createCommentResponse.success;
+
+                  notifyStore.push({
+                    id: v4(),
+                    type: isSuccess ? "alert-success" : "alert-error",
+                    text: isSuccess
+                      ? "Comment added successfully"
+                      : "Something has gone wrong, your comment didn't get added successfully",
+                    duration: 3000,
+                  });
+
+                  if (!isSuccess) return;
+                  setComments([...comments, p.comment]);
+                  p.setContent("");
+                }}
               />
             )}
           </Drawer>

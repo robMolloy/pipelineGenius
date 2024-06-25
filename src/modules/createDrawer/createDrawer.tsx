@@ -11,7 +11,7 @@ export const createDrawer = (createProps: { directionClass: "drawer-end"; id: st
     <div className="drawer-side z-[11]">{p.children}</div>
   );
   const DrawerContent = (p: { children?: React.ReactNode }) => (
-    <div className="min-h-full w-96 max-w-[400px] bg-base-200 p-4 text-base-content">
+    <div className="min-h-full w-96 max-w-[500px] bg-base-200 p-4 text-base-content md:w-[500px]">
       {p.children}
     </div>
   );
