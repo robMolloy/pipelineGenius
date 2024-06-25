@@ -3,9 +3,21 @@ import { NavBar } from "./NavBar";
 import { LinkData as HomeLinkData } from "@/pages/index.page";
 import { LinkData as CreateNewScriptLinkData } from "@/pages/create-new-script.page";
 import { LinkData as ViewScriptsLinkData } from "@/pages/view-scripts.page";
+import { LinkData as LoginLinkData } from "@/pages/login.page";
 import { useRouter } from "next/router";
 
-const pageLinks = [HomeLinkData, ViewScriptsLinkData, CreateNewScriptLinkData];
+export type TPageLink = {
+  label: string;
+  href: string;
+  alwaysShow?: true;
+  horizontalClassName?: string;
+};
+const pageLinks: TPageLink[] = [
+  HomeLinkData,
+  ViewScriptsLinkData,
+  CreateNewScriptLinkData,
+  LoginLinkData,
+];
 
 const CloseDrawerWrapper: React.FC<{ children?: React.ReactNode }> = (p) => {
   return (
@@ -42,17 +54,17 @@ const ContainerWithSpotlightBackgroundTop = (p: { children: React.ReactNode }) =
   );
 };
 
-const DisplayLinks = (p: { horizontal?: boolean }) => {
+const DisplayLinks = (p: { horizontal?: boolean; pageLinks: TPageLink[] }) => {
   const router = useRouter();
 
   return (
-    <ul className={`menu ${p.horizontal ? "menu-horizontal gap-2" : ""}`}>
-      {pageLinks.map((x) => (
+    <ul className={`menu ${p.horizontal ? "menu-horizontal items-center gap-2" : ""}`}>
+      {p.pageLinks.map((x) => (
         <li key={`${x.href}-navLink`}>
           <div
             role="link"
             onClick={() => router.push(x.href)}
-            className={`${x.href === router.route ? "active" : ""}`}
+            className={`${x.href === router.route ? "active" : ""} ${p.horizontal ? x.horizontalClassName : ""} ${x.alwaysShow ? "" : "hidden sm:block"} `}
           >
             {x.label}
           </div>
@@ -70,7 +82,7 @@ export const Layout = (p: { children: React.ReactNode }) => {
         <div className="drawer-content flex flex-col">
           <NavBarContainer>
             <NavBar OpenDrawerWrapper={OpenDrawerWrapper}>
-              <DisplayLinks horizontal />
+              <DisplayLinks horizontal pageLinks={pageLinks} />
             </NavBar>
           </NavBarContainer>
           <ContainerWithSpotlightBackgroundTop>{p.children}</ContainerWithSpotlightBackgroundTop>
@@ -80,7 +92,7 @@ export const Layout = (p: { children: React.ReactNode }) => {
 
           <DrawerContainer>
             <CloseDrawerWrapper>
-              <DisplayLinks />
+              <DisplayLinks pageLinks={pageLinks} />
             </CloseDrawerWrapper>
           </DrawerContainer>
         </div>

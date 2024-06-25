@@ -38,7 +38,7 @@ export const NavBar = (p: TNavbarProps) => {
           </Link>
         </div>
         <div className="flex gap-4">
-          <div className="hidden sm:block">{p.children}</div>
+          <div>{p.children}</div>
         </div>
       </div>
     </div>
