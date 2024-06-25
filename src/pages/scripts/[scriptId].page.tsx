@@ -1,7 +1,6 @@
 import { CommentsForm } from "@/modules/forms/CommentsForm";
 import { Typography } from "@/components";
 import { CodeBlock } from "@/components/CodeBlock";
-import { Textarea } from "@/components/inputs";
 import { db } from "@/firebase-config";
 import { getSafeScript } from "@/modules/db";
 import { getAllSafeDocsFromFirestore } from "@/utils";
@@ -12,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { v4 } from "uuid";
 import { z } from "zod";
 import { createDrawer } from "@/modules/createDrawer/createDrawer";
+import { CommentsTree } from "@/components/CommentsTree";
 type TScriptResponse = Awaited<ReturnType<typeof getSafeScript>>;
 
 const { OpenDrawerWrapper, Drawer } = createDrawer({
@@ -19,7 +19,8 @@ const { OpenDrawerWrapper, Drawer } = createDrawer({
   id: "right-drawer",
 });
 
-type TComment = { id: string; content: string };
+const commentSchema = z.object({ id: z.string(), content: z.string() });
+type TComment = z.infer<typeof commentSchema>;
 type TCommentTree = (TComment & { children?: undefined | TCommentTree })[];
 
 const commentsToCommentsTree = (initComments: TComment[]) => {
@@ -39,63 +40,6 @@ const commentsToCommentsTree = (initComments: TComment[]) => {
   return commentsTree;
 };
 
-const DisplayCommentsTree = ({ first = true, ...p }: { data: TCommentTree; first?: boolean }) => {
-  const [showReplyInputIds, setShowReplyInputIds] = useState<string[]>([]);
-  const [replies, setReplies] = useState<{ [key: string]: string }>({});
-  return (
-    <ul className={first ? "not-prose menu border-l border-white/10 p-0" : ""}>
-      {p.data.map((x) => (
-        <React.Fragment key={`scriptLineComment-${x.id}`}>
-          <div className="text-wrap px-4 pb-0 pt-4">
-            <div>{x.content}</div>
-            {!showReplyInputIds.includes(x.id) && (
-              <div
-                className="flex justify-end"
-                onClick={() => setShowReplyInputIds([...showReplyInputIds, x.id])}
-              >
-                <button className="btn btn-ghost btn-xs opacity-50">Click to reply</button>
-              </div>
-            )}
-            {showReplyInputIds.includes(x.id) && (
-              <>
-                <Textarea
-                  placeholder=""
-                  heightClass="min-h-[1rem]"
-                  className="mt-2"
-                  value={replies[x.id] ?? ""}
-                  onInput={(e) => setReplies({ ...replies, [x.id]: e })}
-                />
-
-                <div className="flex justify-end">
-                  <button
-                    className="btn btn-neutral btn-xs mt-2"
-                    onClick={() => setReplies({ ...replies, [x.id]: "" })}
-                  >
-                    Submit
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-
-          {x.children && (
-            <li>
-              <details>
-                <summary className="opacity-50">
-                  <span className="">See replies</span>
-                </summary>
-                <DisplayCommentsTree first={false} data={x.children} />
-              </details>
-            </li>
-          )}
-        </React.Fragment>
-      ))}
-    </ul>
-  );
-};
-
-const commentSchema = z.object({ id: z.string(), content: z.string() });
-
 export async function createCommentFromFormData(p: { data: z.infer<typeof commentSchema> }) {
   try {
     await setDoc(doc(db, "comments", p.data.id), p.data); // returns undefined
@@ -109,12 +53,10 @@ export async function createCommentFromFormData(p: { data: z.infer<typeof commen
 }
 
 export const getAllSafeComments = async () => {
-  const parseResponse = await getAllSafeDocsFromFirestore({
+  return getAllSafeDocsFromFirestore({
     collectionName: "comments",
     schema: commentSchema,
   });
-
-  return commentsToCommentsTree(parseResponse);
 };
 
 export default function Page() {
@@ -122,16 +64,14 @@ export default function Page() {
   const [scriptResponse, setScriptResponse] = useState<undefined | TScriptResponse>();
   const [scriptId, setScriptId] = useState<string | undefined>();
   const [scriptLineId, setScriptLineId] = useState<number>(0);
-  const [scriptLineCommentsResponse, setScriptLineCommentsResponse] = useState<
-    Awaited<ReturnType<typeof getAllSafeComments>> | undefined
-  >();
+  const [comments, setComments] = useState<TComment[]>([]);
 
   const currentLineId = scriptResponse?.data?.id
     ? `${scriptResponse.data.id}_${scriptLineId}`
     : undefined;
 
-  const scriptLineCommentTree = (scriptLineCommentsResponse ?? []).filter((x) => {
-    return currentLineId ? x.id.startsWith(currentLineId) : false;
+  const currentLineComments = comments.filter((comment) => {
+    return currentLineId ? comment.id.startsWith(currentLineId) : false;
   });
 
   useEffect(() => {
@@ -146,8 +86,9 @@ export default function Page() {
   }, [scriptId]);
 
   useEffect(() => {
-    setScriptLineCommentsResponse(undefined);
-    getAllSafeComments().then((x) => setScriptLineCommentsResponse(x));
+    getAllSafeComments().then((x) => {
+      if (x) setComments(x);
+    });
   }, [scriptLineId]);
 
   return (
@@ -158,25 +99,26 @@ export default function Page() {
       {scriptResponse?.status === "success" && (
         <>
           <Drawer>
-            <div>ID: {currentLineId}</div>
             <div className="rounded bg-white p-2 text-slate-600">
               {scriptResponse.data.content[scriptLineId]}
             </div>
 
             <h2>Comments</h2>
-            {scriptLineCommentTree.length > 0 && (
-              <DisplayCommentsTree data={scriptLineCommentTree} />
+            {currentLineComments.length === 0 && <div>Seems like there's no comments yet</div>}
+            {currentLineComments.length > 0 && (
+              <CommentsTree
+                data={commentsToCommentsTree(currentLineComments)}
+                onAddComment={(data) => setComments([...comments, data])}
+              />
             )}
-            {scriptLineCommentTree.length === 0 && <div>Seems like there's no comments yet</div>}
 
             <CommentsForm
-              placeholder="Be the first to reply"
+              placeholder={comments.length === 0 ? "Be the first to reply" : "Reply..."}
               onSubmit={async (e) => {
                 const data = { id: `${currentLineId}_${v4()}`, content: e };
                 const createCommentResponse = await createCommentFromFormData({ data });
-                if (createCommentResponse.success && scriptLineCommentsResponse) {
-                  setScriptLineCommentsResponse([...scriptLineCommentsResponse, data]);
-                }
+
+                if (createCommentResponse.success) setComments([...comments, data]);
               }}
             />
           </Drawer>
