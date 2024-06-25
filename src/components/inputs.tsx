@@ -1,10 +1,11 @@
 import React, { FormEvent } from "react";
 
 export const TextInput = (p: {
-  value: string;
-  onInput: (e: string) => void;
+  type?: "password";
   label: string;
   placeholder: string;
+  value: string;
+  onInput: (e: string) => void;
 }) => {
   return (
     <label className="form-control w-full">
