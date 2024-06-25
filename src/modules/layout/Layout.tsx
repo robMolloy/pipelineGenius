@@ -1,10 +1,9 @@
-import { Footer } from "./Footer";
-import { NavBar } from "./NavBar";
-import { LinkData as HomeLinkData } from "@/pages/index.page";
 import { LinkData as CreateNewScriptLinkData } from "@/pages/create-new-script.page";
-import { LinkData as ViewScriptsLinkData } from "@/pages/view-scripts.page";
+import { LinkData as HomeLinkData } from "@/pages/index.page";
 import { LinkData as LoginLinkData } from "@/pages/login.page";
+import { LinkData as ViewScriptsLinkData } from "@/pages/view-scripts.page";
 import { useRouter } from "next/router";
+import { NavBar } from "./NavBar";
 
 export type TPageLink = {
   label: string;
@@ -64,7 +63,7 @@ const DisplayLinks = (p: { horizontal?: boolean; pageLinks: TPageLink[] }) => {
           <div
             role="link"
             onClick={() => router.push(x.href)}
-            className={`${x.href === router.route ? "active" : ""} ${p.horizontal ? x.horizontalClassName : ""} ${x.alwaysShow ? "" : "hidden sm:block"} `}
+            className={`${x.href === router.route ? "active" : ""} ${p.horizontal ? x.horizontalClassName : ""} ${!x.alwaysShow && p.horizontal ? "hidden sm:block" : ""} `}
           >
             {x.label}
           </div>
@@ -97,7 +96,7 @@ export const Layout = (p: { children: React.ReactNode }) => {
           </DrawerContainer>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };
