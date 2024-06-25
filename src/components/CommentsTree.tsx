@@ -10,7 +10,7 @@ export const CommentsTree = (p: {
   parentId?: string;
   data: ReturnType<typeof commentsToCommentsTree>;
   first?: boolean;
-  onAddComment: (p: z.infer<typeof commentSchema>) => void;
+  onAddCommentSuccess: (p: z.infer<typeof commentSchema>) => void;
 }) => {
   const { first = true } = p;
   const [showReplyInputIds, setShowReplyInputIds] = useState<string[]>([]);
@@ -23,7 +23,7 @@ export const CommentsTree = (p: {
           placeholder={p.data.length === 0 ? "Be the first to reply" : "Reply..."}
           onSubmit={async (e) => {
             const data = { id: `${p.parentId}_${v4()}`, content: e };
-            p.onAddComment(data);
+            p.onAddCommentSuccess(data);
           }}
         />
       )}
@@ -46,8 +46,8 @@ export const CommentsTree = (p: {
                   onSubmit={async (e) => {
                     const data = { id: `${x.id}_${v4()}`, content: e };
                     const createCommentResponse = await createCommentFromFormData({ data });
-                    if (createCommentResponse.success && p.onAddComment)
-                      p.onAddComment(createCommentResponse.data);
+                    if (createCommentResponse.success && p.onAddCommentSuccess)
+                      p.onAddCommentSuccess(createCommentResponse.data);
                   }}
                 />
               )}
@@ -62,7 +62,7 @@ export const CommentsTree = (p: {
                   <CommentsTree
                     first={false}
                     data={x.children}
-                    onAddComment={(data) => p.onAddComment(data)}
+                    onAddCommentSuccess={(data) => p.onAddCommentSuccess(data)}
                   />
                 </details>
               </li>

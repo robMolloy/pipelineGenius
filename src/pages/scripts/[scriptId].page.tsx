@@ -58,12 +58,11 @@ export default function Page() {
             </div>
 
             <h2>Comments</h2>
-
             {currentLineId && (
               <CommentsTree
                 parentId={currentLineId}
                 data={commentsToCommentsTree(currentLineComments)}
-                onAddComment={(data) => setComments([...comments, data])}
+                onAddCommentSuccess={(data) => setComments([...comments, data])}
               />
             )}
           </Drawer>

@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 type TAlertProps = {
   id: string;
-  type: "alert-success" | "alert-info";
+  type: "alert-success" | "alert-info" | "alert-error" | "alert-warning";
   text: string;
   duration: number;
 };
