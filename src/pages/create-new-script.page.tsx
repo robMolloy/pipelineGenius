@@ -9,6 +9,33 @@ export const LinkData = {
   label: "Create New Script",
   href: "/create-new-script",
 };
+export const NavLink = () => {
+  const router = useRouter();
+
+  return (
+    <div
+      role="link"
+      onClick={() => router.push(LinkData.href)}
+      className={`${router.route === LinkData.href ? "active" : ""}`}
+    >
+      {LinkData.label}
+    </div>
+  );
+};
+
+export const SideMenuLink = () => {
+  const router = useRouter();
+
+  return (
+    <div
+      role="link"
+      onClick={() => router.push(LinkData.href)}
+      className={`${router.route === LinkData.href ? "active" : ""}`}
+    >
+      {LinkData.label}
+    </div>
+  );
+};
 
 export default function Page() {
   const router = useRouter();

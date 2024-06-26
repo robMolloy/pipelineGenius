@@ -1,12 +1,17 @@
-import { LinkData as CreateNewScriptLinkData } from "@/pages/create-new-script.page";
-import { LinkData as HomeLinkData } from "@/pages/index.page";
-import { LinkData as ViewScriptsLinkData } from "@/pages/view-scripts.page";
-import { useRouter } from "next/router";
-import { NavBar } from "./NavBar";
 import { UserAuthModal } from "@/components/UserAuthModal";
+import { auth } from "@/firebase-config";
+import {
+  NavLink as CreateNewScriptNavLink,
+  SideMenuLink as CreateNewScriptSideMenuLink,
+} from "@/pages/create-new-script.page";
+import { NavLink as HomeNavLink, SideMenuLink as HomeSideMenuLink } from "@/pages/index.page";
+import {
+  NavLink as ViewScriptsNavLink,
+  SideMenuLink as ViewScriptsSideMenuLink,
+} from "@/pages/view-scripts.page";
 import { useUserStore } from "@/stores/useUserStore";
 import { signOut } from "firebase/auth";
-import { auth } from "@/firebase-config";
+import { NavBar } from "./NavBar";
 
 export type TPageLink = {
   label: string;
@@ -14,7 +19,6 @@ export type TPageLink = {
   alwaysShow?: true;
   horizontalClassName?: string;
 };
-const pageLinks: TPageLink[] = [HomeLinkData, ViewScriptsLinkData, CreateNewScriptLinkData];
 
 const CloseDrawerWrapper: React.FC<{ children?: React.ReactNode }> = (p) => {
   return (
@@ -51,37 +55,9 @@ const ContainerWithSpotlightBackgroundTop = (p: { children: React.ReactNode }) =
   );
 };
 
-const DisplayLinks = (p: { horizontal?: boolean; pageLinks: TPageLink[] }) => {
-  const router = useRouter();
-
+export const Layout = (p: { children: React.ReactNode }) => {
   const userStore = useUserStore();
 
-  return (
-    <>
-      <ul className={`menu ${p.horizontal ? "menu-horizontal items-center gap-2" : ""}`}>
-        {p.pageLinks.map((x) => (
-          <li key={`${x.href}-navLink`}>
-            <div
-              role="link"
-              onClick={() => router.push(x.href)}
-              className={`${x.href === router.route ? "active" : ""} ${p.horizontal ? x.horizontalClassName : ""} ${!x.alwaysShow && p.horizontal ? "hidden sm:block" : ""} `}
-            >
-              {x.label}
-            </div>
-          </li>
-        ))}
-      </ul>
-      {userStore.safeUser.status === "signedOut" && <UserAuthModal />}
-      {userStore.safeUser.status === "signedIn" && (
-        <button className="btn btn-sm" onClick={() => signOut(auth)}>
-          Sign out
-        </button>
-      )}
-    </>
-  );
-};
-
-export const Layout = (p: { children: React.ReactNode }) => {
   return (
     <>
       <div className="drawer">
@@ -89,7 +65,26 @@ export const Layout = (p: { children: React.ReactNode }) => {
         <div className="drawer-content flex flex-col">
           <NavBarContainer>
             <NavBar OpenDrawerWrapper={OpenDrawerWrapper}>
-              <DisplayLinks horizontal pageLinks={pageLinks} />
+              <ul className="menu menu-horizontal items-center gap-2">
+                <li className="hidden sm:block">
+                  <HomeNavLink />
+                </li>
+                <li className="hidden sm:block">
+                  <ViewScriptsNavLink />
+                </li>
+                {userStore.safeUser.status === "signedIn" && (
+                  <li className="hidden sm:block">
+                    <CreateNewScriptNavLink />
+                  </li>
+                )}
+              </ul>
+
+              {userStore.safeUser.status === "signedOut" && <UserAuthModal />}
+              {userStore.safeUser.status === "signedIn" && (
+                <button className="btn btn-sm" onClick={() => signOut(auth)}>
+                  Sign out
+                </button>
+              )}
             </NavBar>
           </NavBarContainer>
           <ContainerWithSpotlightBackgroundTop>{p.children}</ContainerWithSpotlightBackgroundTop>
@@ -99,7 +94,19 @@ export const Layout = (p: { children: React.ReactNode }) => {
 
           <DrawerContainer>
             <CloseDrawerWrapper>
-              <DisplayLinks pageLinks={pageLinks} />
+              <ul className="menu">
+                <li>
+                  <HomeSideMenuLink />
+                </li>
+                <li>
+                  <ViewScriptsSideMenuLink />
+                </li>
+                {userStore.safeUser.status === "signedIn" && (
+                  <li>
+                    <CreateNewScriptSideMenuLink />
+                  </li>
+                )}
+              </ul>
             </CloseDrawerWrapper>
           </DrawerContainer>
         </div>

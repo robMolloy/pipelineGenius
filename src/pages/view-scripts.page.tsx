@@ -2,12 +2,41 @@ import { Typography } from "@/components";
 import { CodeBlock } from "@/components/CodeBlock";
 import { getAllSafeScripts, scriptSchema } from "@/modules/db";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
 export const LinkData = {
   label: "View Scripts",
   href: "/view-scripts",
+};
+
+export const NavLink = () => {
+  const router = useRouter();
+
+  return (
+    <div
+      role="link"
+      onClick={() => router.push(LinkData.href)}
+      className={`${router.route === LinkData.href ? "active" : ""}`}
+    >
+      {LinkData.label}
+    </div>
+  );
+};
+
+export const SideMenuLink = () => {
+  const router = useRouter();
+
+  return (
+    <div
+      role="link"
+      onClick={() => router.push(LinkData.href)}
+      className={`${router.route === LinkData.href ? "active" : ""}`}
+    >
+      {LinkData.label}
+    </div>
+  );
 };
 
 export default function Page() {
