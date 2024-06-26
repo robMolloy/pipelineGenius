@@ -4,6 +4,9 @@ import { LinkData as ViewScriptsLinkData } from "@/pages/view-scripts.page";
 import { useRouter } from "next/router";
 import { NavBar } from "./NavBar";
 import { UserAuthModal } from "@/components/UserAuthModal";
+import { useUserStore } from "@/stores/useUserStore";
+import { signOut } from "firebase/auth";
+import { auth } from "@/firebase-config";
 
 export type TPageLink = {
   label: string;
@@ -51,6 +54,8 @@ const ContainerWithSpotlightBackgroundTop = (p: { children: React.ReactNode }) =
 const DisplayLinks = (p: { horizontal?: boolean; pageLinks: TPageLink[] }) => {
   const router = useRouter();
 
+  const userStore = useUserStore();
+
   return (
     <>
       <ul className={`menu ${p.horizontal ? "menu-horizontal items-center gap-2" : ""}`}>
@@ -66,7 +71,12 @@ const DisplayLinks = (p: { horizontal?: boolean; pageLinks: TPageLink[] }) => {
           </li>
         ))}
       </ul>
-      <UserAuthModal />
+      {userStore.safeUser.status === "signedOut" && <UserAuthModal />}
+      {userStore.safeUser.status === "signedIn" && (
+        <button className="btn btn-sm" onClick={() => signOut(auth)}>
+          Sign out
+        </button>
+      )}
     </>
   );
 };

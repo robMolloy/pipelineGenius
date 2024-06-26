@@ -4,7 +4,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { cloneDeep } from "lodash";
 import { z } from "zod";
 
-export const commentSchema = z.object({ id: z.string(), content: z.string() });
+export const commentSchema = z.object({ id: z.string(), content: z.string(), uid: z.string() });
 type TComment = z.infer<typeof commentSchema>;
 type TCommentTree = (TComment & { children?: undefined | TCommentTree })[];
 

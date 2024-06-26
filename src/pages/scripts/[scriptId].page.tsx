@@ -10,6 +10,7 @@ import {
   getAllSafeComments,
 } from "@/modules/db/dbComments";
 import { useNotifyStore } from "@/modules/notify";
+import { useUserStore } from "@/stores/useUserStore";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { v4 } from "uuid";
@@ -54,6 +55,8 @@ export default function Page() {
     getAllSafeComments().then((x) => setComments(x));
   }, [scriptLineId]);
 
+  const userStore = useUserStore();
+
   return (
     <Typography fullPage>
       {scriptResponse === undefined && <h2>Loading...</h2>}
@@ -71,25 +74,29 @@ export default function Page() {
               <CommentsTree
                 parentId={currentLineId}
                 data={commentsToCommentsTree(currentLineComments)}
+                isSignedIn={userStore.safeUser.status === "signedIn"}
                 onAddComment={async (p) => {
-                  const createCommentResponse = await createCommentFromFormData({
-                    data: p.comment,
-                  });
+                  if (userStore.safeUser.status === "signedIn") {
+                    const comment = { ...p.comment, uid: userStore.safeUser.user.uid };
+                    const createCommentResponse = await createCommentFromFormData({
+                      data: comment,
+                    });
 
-                  const isSuccess = createCommentResponse.success;
+                    const isSuccess = createCommentResponse.success;
 
-                  notifyStore.push({
-                    id: v4(),
-                    type: isSuccess ? "alert-success" : "alert-error",
-                    text: isSuccess
-                      ? "Comment added successfully"
-                      : "Something has gone wrong, your comment didn't get added successfully",
-                    duration: 3000,
-                  });
+                    notifyStore.push({
+                      id: v4(),
+                      type: isSuccess ? "alert-success" : "alert-error",
+                      text: isSuccess
+                        ? "Comment added successfully"
+                        : "Something has gone wrong, your comment didn't get added successfully",
+                      duration: 3000,
+                    });
 
-                  if (!isSuccess) return;
-                  setComments([...comments, p.comment]);
-                  p.setContent("");
+                    if (!isSuccess) return;
+                    setComments([...comments, comment]);
+                    p.setContent("");
+                  }
                 }}
               />
             )}

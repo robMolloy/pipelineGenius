@@ -9,6 +9,7 @@ const commentSchema = z.object({ id: z.string(), content: z.string() });
 export const CommentsTree = (p: {
   parentId?: string;
   data: ReturnType<typeof commentsToCommentsTree>;
+  isSignedIn: boolean;
   first?: boolean;
   onAddComment: (p: {
     comment: z.infer<typeof commentSchema>;
@@ -21,7 +22,7 @@ export const CommentsTree = (p: {
   return (
     <>
       {first && p.data.length === 0 && <div>Seems like there's no comments yet</div>}
-      {first && (
+      {first && p.isSignedIn && (
         <CommentsForm
           placeholder={p.data.length === 0 ? "Be the first to reply" : "Reply..."}
           onSubmit={async (e) => {
@@ -35,7 +36,7 @@ export const CommentsTree = (p: {
           <React.Fragment key={`scriptLineComment-${x.id}`}>
             <div className="text-wrap px-4 pb-0 pt-4">
               <div>{x.content}</div>
-              {!showReplyInputIds.includes(x.id) && (
+              {!showReplyInputIds.includes(x.id) && p.isSignedIn && (
                 <div
                   className="flex justify-end"
                   onClick={() => setShowReplyInputIds([...showReplyInputIds, x.id])}
@@ -43,7 +44,7 @@ export const CommentsTree = (p: {
                   <button className="btn btn-ghost btn-xs opacity-50">Click to reply</button>
                 </div>
               )}
-              {showReplyInputIds.includes(x.id) && (
+              {showReplyInputIds.includes(x.id) && p.isSignedIn && (
                 <CommentsForm
                   placeholder="Reply..."
                   onSubmit={async (e) => {
@@ -51,6 +52,11 @@ export const CommentsTree = (p: {
                     p.onAddComment({ comment, setContent: e.setContent });
                   }}
                 />
+              )}
+              {!p.isSignedIn && (
+                <div className="flex justify-end">
+                  <div className="opacity-50">Sign in to reply</div>
+                </div>
               )}
             </div>
 
@@ -62,6 +68,7 @@ export const CommentsTree = (p: {
                   </summary>
                   <CommentsTree
                     first={false}
+                    isSignedIn={p.isSignedIn}
                     data={x.children}
                     onAddComment={(data) => p.onAddComment(data)}
                   />

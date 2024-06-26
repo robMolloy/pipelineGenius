@@ -28,10 +28,14 @@ export async function getAllSafeDocsFromFirestore<T extends ZodType<any, any, an
   schema: T;
 }) {
   const querySnapshot = await getDocs(collection(db, p.collectionName));
+  console.log(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+
   const documents = querySnapshot.docs
     .map((doc) => ({ id: doc.id, ...doc.data() }))
     .map((doc) => {
       const parseResponse = p.schema.safeParse(doc);
+      console.log(parseResponse);
+
       if (parseResponse.success) return parseResponse.data;
     })
     .filter((x) => !!x) as z.infer<typeof p.schema>[];

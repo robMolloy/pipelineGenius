@@ -2,8 +2,10 @@ import { RadioInput, TextInput, Textarea } from "@/components/inputs";
 import React, { useState } from "react";
 import { z } from "zod";
 import { createScriptFormDataSchema, createScriptFromFormData } from "../db";
+import { useUserStore } from "@/stores/useUserStore";
 
 export const CreateNewScriptForm = (p: { onSubmitSuccess?: () => void }) => {
+  const userStore = useUserStore();
   const [formData, setFormData] = useState<z.infer<typeof createScriptFormDataSchema>>({
     language: "",
     name: "",
@@ -16,8 +18,12 @@ export const CreateNewScriptForm = (p: { onSubmitSuccess?: () => void }) => {
         e.preventDefault();
 
         const parseResponse = createScriptFormDataSchema.safeParse(formData);
-        if (parseResponse.success) {
-          const submitResponse = await createScriptFromFormData({ data: parseResponse.data });
+        if (parseResponse.success && userStore.safeUser.status === "signedIn") {
+          console.log({ x: userStore.safeUser.user });
+
+          const data = { ...parseResponse.data, uid: userStore.safeUser.user.uid };
+          const submitResponse = await createScriptFromFormData({ data });
+
           if (submitResponse.success && p.onSubmitSuccess) p.onSubmitSuccess();
         }
       }}
