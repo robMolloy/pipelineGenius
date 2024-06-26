@@ -19,8 +19,6 @@ export const CreateNewScriptForm = (p: { onSubmitSuccess?: () => void }) => {
 
         const parseResponse = createScriptFormDataSchema.safeParse(formData);
         if (parseResponse.success && userStore.safeUser.status === "signedIn") {
-          console.log({ x: userStore.safeUser.user });
-
           const data = { ...parseResponse.data, uid: userStore.safeUser.user.uid };
           const submitResponse = await createScriptFromFormData({ data });
 
