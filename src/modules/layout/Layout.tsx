@@ -1,9 +1,9 @@
 import { LinkData as CreateNewScriptLinkData } from "@/pages/create-new-script.page";
 import { LinkData as HomeLinkData } from "@/pages/index.page";
-import { LinkData as LoginLinkData } from "@/pages/login.page";
 import { LinkData as ViewScriptsLinkData } from "@/pages/view-scripts.page";
 import { useRouter } from "next/router";
 import { NavBar } from "./NavBar";
+import { UserAuthModal } from "@/components/UserAuthModal";
 
 export type TPageLink = {
   label: string;
@@ -11,12 +11,7 @@ export type TPageLink = {
   alwaysShow?: true;
   horizontalClassName?: string;
 };
-const pageLinks: TPageLink[] = [
-  HomeLinkData,
-  ViewScriptsLinkData,
-  CreateNewScriptLinkData,
-  LoginLinkData,
-];
+const pageLinks: TPageLink[] = [HomeLinkData, ViewScriptsLinkData, CreateNewScriptLinkData];
 
 const CloseDrawerWrapper: React.FC<{ children?: React.ReactNode }> = (p) => {
   return (
@@ -57,19 +52,22 @@ const DisplayLinks = (p: { horizontal?: boolean; pageLinks: TPageLink[] }) => {
   const router = useRouter();
 
   return (
-    <ul className={`menu ${p.horizontal ? "menu-horizontal items-center gap-2" : ""}`}>
-      {p.pageLinks.map((x) => (
-        <li key={`${x.href}-navLink`}>
-          <div
-            role="link"
-            onClick={() => router.push(x.href)}
-            className={`${x.href === router.route ? "active" : ""} ${p.horizontal ? x.horizontalClassName : ""} ${!x.alwaysShow && p.horizontal ? "hidden sm:block" : ""} `}
-          >
-            {x.label}
-          </div>
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul className={`menu ${p.horizontal ? "menu-horizontal items-center gap-2" : ""}`}>
+        {p.pageLinks.map((x) => (
+          <li key={`${x.href}-navLink`}>
+            <div
+              role="link"
+              onClick={() => router.push(x.href)}
+              className={`${x.href === router.route ? "active" : ""} ${p.horizontal ? x.horizontalClassName : ""} ${!x.alwaysShow && p.horizontal ? "hidden sm:block" : ""} `}
+            >
+              {x.label}
+            </div>
+          </li>
+        ))}
+      </ul>
+      <UserAuthModal />
+    </>
   );
 };
 
